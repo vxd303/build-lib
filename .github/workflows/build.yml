@@ -64,24 +64,6 @@ jobs:
           nl -ba "$BUILD_DIR/CMakeLists.txt" | sed -n '1,180p'
       - name: Clean build/
         run: rm -rf build
-
-      - name: Configure (host LLVM14; libc++; C++17)
-        env:
-          LLVM_DIR: ${{ env.HOST_LLVM_DIR }}
-          CC: ${{ env.CC }}
-          CXX: ${{ env.CXX }}
-        run: |
-          set -euo pipefail
-          D="${{ steps.detect.outputs.build_dir }}"
-          cmake -S "$D" -B build -G Ninja \
-            -DLLVM_DIR="${LLVM_DIR}" \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER="${CC}" \
-            -DCMAKE_CXX_COMPILER="${CXX}" \
-            -DCMAKE_CXX_STANDARD=17 \
-            -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
-            -DCMAKE_SHARED_LINKER_FLAGS="-stdlib=libc++ -Wl,-rpath,/usr/lib"
-
       - name: Build plugin
         run: cmake --build build -j"$(nproc)"
 
